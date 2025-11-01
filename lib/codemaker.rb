@@ -2,26 +2,36 @@
 
 # this class creates an anonymous sequence and compares with guesses
 class Codemaker
-  def initialize
-    @sequence = generate_sequence
+  COLORS = %w[red orange yellow green blue purple].freeze
+
+  def initialize(size)
+    @sequence = generate_sequence(size)
   end
 
-  # promise it's same size and no nils
+  def pop_sequence!
+    sequence = self.sequence
+    self.sequence = nil
+    sequence
+  end
+
   def compare(guess_sequence)
     # TODO: refactor
-    original_sequence = sequence
+    original_sequence = sequence.clone
     result = []
 
-    guess_sequence.each.with_index do |guess, index|
-      if original_sequence.include?(guess)
-        result << case original_sequence.index(guess)
-                  when index
-                    'RIGHT ON MONEY, ONE AT EXACT SPOT!'
-                  else
-                    'IT EXISTS BUT ON AT THE SAME SPOT'
-                  end
+    original_sequence.each.with_index do |color, index|
+      if guess_sequence.include?(color)
+        result <<
+          case guess_sequence[index]
+          when color
+            guess_sequence[index] = nil
+            'black'
+          else
+            guess_sequence[guess_sequence.index(color)] = nil
+            'white'
+          end
 
-        original_sequence[original_sequence.index(guess)] = nil
+        original_sequence[index] = nil
       end
     end
 
@@ -30,11 +40,9 @@ class Codemaker
 
   private
 
-  COLORS = %w[red orange yellow green blue purple].freeze
-
   def generate_sequence(size = 4)
     size.times.map { COLORS.sample }
   end
 
-  attr_reader :sequence
+  attr_accessor :sequence
 end
